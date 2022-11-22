@@ -86,7 +86,7 @@ ngOnInit(): void {
     relationships: this.relationships,
     
   });
-  this.relationShipColorChange()
+  this.relationShipColorChange();
 }
 
 relationShipColorChange() {

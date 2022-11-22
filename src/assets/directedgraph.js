@@ -659,6 +659,15 @@ function DirectedGraph(_selector, _options) {
     svgNodes = g.append("g").attr("class", "nodes");
   }
 
+  d3.select("#zoom_in").on("click", function() {
+    zoomValue.scaleBy(svg.transition().duration(750), 1.2);
+  });
+
+  d3.select("#zoom_out").on("click", function() {
+    zoomValue.scaleBy(svg.transition().duration(750), 0.8);
+  });
+
+
   function initSimulation() {
     return (
       d3
@@ -1285,7 +1294,6 @@ function DirectedGraph(_selector, _options) {
   function zoomed() {
     g.attr("transform", d3.event.transform);
   }
-
   //___tick
 
   function tick() {
