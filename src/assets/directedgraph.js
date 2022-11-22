@@ -699,11 +699,10 @@ function DirectedGraph(_selector, _options) {
         .force(
           "center",
           d3.forceCenter(
-            svg.node().parentElement.parentElement.clientWidth / 2,
-            svg.node().parentElement.parentElement.clientHeight / 2
+            700 / 2,
+            700 / 2
           )
         )
-
         .force(
           "charge",
           d3
