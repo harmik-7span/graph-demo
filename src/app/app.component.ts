@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 declare var DirectedGraph: any;
-
-
+declare var d3: any;
 
 @Component({
   selector: 'app-root',
@@ -14,6 +13,9 @@ export class AppComponent implements OnInit {
   relationships:any = [];
   nodes:any = [];
   fullGraphUrl:any = [];
+  subGraphRelationshipId= [
+    9267702
+];
 constructor(){
   this.fullGraphUrl = neo4jdata
 }
@@ -60,7 +62,7 @@ ngOnInit(): void {
       })
     }
   });
-  DirectedGraph(".content", {
+  DirectedGraph("#neo4jd3-full", {
     arrowSize: 7.5,
     relationshipWidth: 1.5,
     nodeRadius: 23,
@@ -84,6 +86,20 @@ ngOnInit(): void {
     relationships: this.relationships,
     
   });
+  this.relationShipColorChange()
+}
+
+relationShipColorChange() {
+    let colorRelationship = d3.selectAll("#neo4jd3-full svg .relationship .outline");
+      for (var i = 0; i < colorRelationship._groups[0].length; i++) {
+        if (this.subGraphRelationshipId.find(element =>
+          element == colorRelationship._groups[0][i].__data__.id
+        ) != undefined) {
+          colorRelationship._groups[0][i].attributes.stroke.nodeValue = '#FF0000';
+        } else {
+          colorRelationship._groups[0][i].attributes.stroke.nodeValue = '#a5abb6';
+        }
+      }
 }
 
 }
