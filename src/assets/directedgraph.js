@@ -22,10 +22,12 @@ function DirectedGraph(_selector, _options) {
     relationshipWidth: 1.5,
     nodeRadius: 23,
     zoomScale: [0.1, 10],
-    colors: {},
+    colors: colors(),
     icons: {},
+    infoPanel: true,
     nodeCaption: true,
     relationshipCaption: true,
+    relationshipColor: '#a5abb6',
   };
 
   // ----- init
@@ -40,6 +42,9 @@ function DirectedGraph(_selector, _options) {
 
     appendGraph(d3.select(selector));
     simulation = initSimulation();
+    if (options.infoPanel) {
+      info = appendInfoPanel(d3.select(selector));
+    }
   }
 
   function drawGraph(_data) {
@@ -47,6 +52,10 @@ function DirectedGraph(_selector, _options) {
     showData(data);
   }
 
+  function appendInfoPanel(container) {
+    return container.append('div')
+        .attr('class', 'neo4jd3-info');
+}
   // components/graph
   function findNode(id, nodes) {
     let match;
@@ -662,11 +671,108 @@ function DirectedGraph(_selector, _options) {
   d3.select("#zoom_in").on("click", function() {
     zoomValue.scaleBy(svg.transition().duration(750), 1.2);
   });
-
   d3.select("#zoom_out").on("click", function() {
     zoomValue.scaleBy(svg.transition().duration(750), 0.8);
   });
+  function appendInfoElementClass(cls, node) {
+    appendInfoElement(cls, true, node);
+}
 
+function appendInfoElementProperty(cls, property, value) {
+    appendInfoElement(cls, false, property, value);
+}
+
+function appendInfoElementRelationship(cls, relationship) {
+    appendInfoElement(cls, false, relationship);
+}
+function defaultColor() {
+  return options.relationshipColor;
+}
+function defaultDarkenColor() {
+  return d3.rgb(options.colors[options.colors.length - 1]).darker(1);
+}
+function colors() {
+  // d3.schemeCategory10,
+  // d3.schemeCategory20,
+  return [
+      '#68bdf6', // light blue
+      '#6dce9e', // green #1
+      '#faafc2', // light pink
+      '#f2baf6', // purple
+      '#ff928c', // light red
+      '#fcea7e', // light yellow
+      '#ffc766', // light orange
+      '#405f9e', // navy blue
+      '#a5abb6', // dark gray
+      '#78cecb', // green #2,
+      '#b88cbb', // dark purple
+      '#ced2d9', // light gray
+      '#e84646', // dark red
+      '#fa5f86', // dark pink
+      '#ffab1a', // dark orange
+      '#fcda19', // dark yellow
+      '#797b80', // black
+      '#c9d96f', // pistacchio
+      '#47991f', // green #3
+      '#70edee', // turquoise
+      '#ff75ea'  // pink
+  ];
+}
+function appendInfoElement(cls, isNode, property, value) {
+  var elem = info.append('a');
+
+  elem.attr('href', '#')
+      .attr('class', cls)
+      .html('<strong>' + property + '</strong>' + (value ? (': ' + value) : ''));
+
+  if (!value) {
+      elem.style('background-color', function (d) {
+          if (property == "Person") {
+              return 'rgb(255, 96, 92)';
+          } else if (property == "Address") {
+              return 'rgb(219, 132, 193)';
+          } else if (property == "Company") {
+              return 'rgb(113, 207, 152)';
+          } else {
+              return options.nodeOutlineFillColor ? options.nodeOutlineFillColor : (isNode ? class2color(property) : defaultColor());
+          }
+      })
+          .style('border-color', function (d) {
+              if (property == "Person") {
+                  return 'rgb(255, 5, 27)';
+              } else if (property == "Address") {
+                  return 'rgb(191, 88, 151)';
+              } else if (property == "Company") {
+                  return 'rgb(71, 174, 122)';
+              } else {
+                  return options.nodeOutlineFillColor ? class2darkenColor(options.nodeOutlineFillColor) : (isNode ? class2darkenColor(property) : defaultDarkenColor());
+              }
+          })
+          .style('color', function (d) {
+              return options.nodeOutlineFillColor ? class2darkenColor(options.nodeOutlineFillColor) : '#fff';
+          });
+  }
+}
+
+function updateInfo(d) {
+  clearInfo();
+
+  if (d.labels) {
+      appendInfoElementClass('class', d.labels[0]);
+  } else {
+      appendInfoElementRelationship('class', d.type);
+  }
+
+  appendInfoElementProperty('property', '&lt;id&gt;', d.id);
+
+  Object.keys(d.properties).forEach(function (property) {
+      appendInfoElementProperty('property', property, JSON.stringify(d.properties[property]));
+  });
+}
+
+function clearInfo() {
+  info.html('');
+}
 
   function initSimulation() {
     return (
@@ -947,7 +1053,20 @@ function DirectedGraph(_selector, _options) {
   }
 
   function appendRelationshipToGraph() {
-    return relationship.enter().append("g").attr("class", "relationship");
+    return relationship.enter().append("g").attr("class", "relationship")
+    .on("mouseenter", (d) => {
+      //TODO: Features will be added
+      if (info) {
+        updateInfo(d);
+    }
+    })
+    .on("mouseleave", (d) => {
+      //TODO: Features will be added
+      if (info) {
+        clearInfo(d);
+    }
+    })
+
   }
 
   function appendOutlineToRelationship(n) {
@@ -1046,6 +1165,19 @@ function DirectedGraph(_selector, _options) {
       })
       .on("click", (d) => {
         //TODO: Features will be added
+        
+      })
+      .on("mouseenter", (d) => {
+        //TODO: Features will be added
+        if (info) {
+          updateInfo(d);
+      }
+      })
+      .on("mouseleave", (d) => {
+        //TODO: Features will be added
+        if (info) {
+          clearInfo(d);
+      }
       })
       .on("dblclick", (d) => {
         //TODO: Features will be added
