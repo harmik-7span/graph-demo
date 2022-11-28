@@ -8,6 +8,7 @@ function DirectedGraph(_selector, _options) {
     relationshipOverlay,
     relationshipText,
     selector,
+    toolTipinfo,
     simulation,
     svg,
     zoomValue,
@@ -25,6 +26,7 @@ function DirectedGraph(_selector, _options) {
     colors: colors(),
     icons: {},
     infoPanel: true,
+    toolTipOnNode:true,
     nodeCaption: true,
     relationshipCaption: true,
     relationshipColor: '#a5abb6',
@@ -45,6 +47,10 @@ function DirectedGraph(_selector, _options) {
     if (options.infoPanel) {
       info = appendInfoPanel(d3.select(selector));
     }
+
+    if (options.toolTipOnNode) {
+      toolTipinfo = appendToolTipOnNode(d3.select(selector));
+    }
   }
 
   function drawGraph(_data) {
@@ -55,6 +61,11 @@ function DirectedGraph(_selector, _options) {
   function appendInfoPanel(container) {
     return container.append('div')
         .attr('class', 'neo4jd3-info');
+}
+
+function appendToolTipOnNode(container) {
+  return container.append('div')
+      .attr('id', 'neo4jd3-tooltip');
 }
   // components/graph
   function findNode(id, nodes) {
@@ -769,11 +780,46 @@ function updateInfo(d) {
       appendInfoElementProperty('property', property, JSON.stringify(d.properties[property]));
   });
 }
+function updateToopTipInfo(d) {
+  clearToolTipInfo();
+  if (options.toolTipOnNode) {
 
+      var elem = toolTipinfo.append('div')
+      let hoverTitleText = "";
+      let hoverIdText = "";
+      let hoverProperties = "";
+      hoverTitleText = "<tr><td class='key-title'>Type</td><td>" + d.labels[0] + "</td>";
+      hoverIdText = "<tr><td class='key-title'>id</td><td>" + d.id + "</td>";
+      for (var key in d.properties) {
+          hoverProperties += "<tr><td class='key-title'>" + key + "</td><td>" + d.properties[key] + "</td>"
+      }
+      elem.attr('class', "tooltip-wrapper")
+          .html("<table>" + hoverTitleText + hoverIdText + hoverProperties + "</table>").transition().duration(200);
+      // if (d.x < 200) {
+      //     document.getElementById("neo4jd3-tooltip").style.left = (d.x + 80) + "px";
+      // } else if (d.x > 650) {
+      //     document.getElementById("neo4jd3-tooltip").style.left = (d.x - 100) + "px";
+      // } else {
+      //     document.getElementById("neo4jd3-tooltip").style.left = (d.x + 55) + "px";
+      // }
+      document.getElementById("neo4jd3-tooltip").style.left = (d3.event.pageX + 10) + "px"
+      document.getElementById("neo4jd3-tooltip").style.top = (d3.event.pageY - 10) + "px";
+
+      // if (d.y < 100) {
+      //     document.getElementById("neo4jd3-tooltip").style.top = (d.y + 80) + "px";
+      // } else if (d.y > 360) {
+      //     document.getElementById("neo4jd3-tooltip").style.top = (d.y - 100) + "px";
+      // } else {
+      //     document.getElementById("neo4jd3-tooltip").style.top = (d.y + 55) + "px";
+      // }
+  }
+}
 function clearInfo() {
   info.html('');
 }
-
+function clearToolTipInfo() {
+  toolTipinfo.html('');
+}
   function initSimulation() {
     return (
       d3
@@ -1172,15 +1218,27 @@ function clearInfo() {
         if (info) {
           updateInfo(d);
       }
+      if (toolTipinfo) {
+        updateToopTipInfo(d);
+    }
       })
       .on("mouseleave", (d) => {
         //TODO: Features will be added
         if (info) {
           clearInfo(d);
       }
+      if (toolTipinfo) {
+        clearToolTipInfo(d);
+    }
       })
       .on("dblclick", (d) => {
         //TODO: Features will be added
+      })
+      .on("mousemove", (d) => {
+        //TODO: Features will be added
+      if (toolTipinfo) {
+        updateToopTipInfo(d);
+    }
       })
       .call(
         d3
@@ -1407,12 +1465,19 @@ function clearInfo() {
   }
 
   function dragged(d) {
+    console.log(options.toolTipOnNode)
+    
     stickNode(d);
   }
 
   function stickNode(d) {
     d.fx = d3.event.x;
     d.fy = d3.event.y;
+    if (options.toolTipOnNode) {
+      
+      document.getElementById("neo4jd3-tooltip").style.left = (d3.event.pageX + 10) + "px"
+      document.getElementById("neo4jd3-tooltip").style.top = (d3.event.pageY - 10) + "px";
+  }
   }
 
   function dragStarted(d) {

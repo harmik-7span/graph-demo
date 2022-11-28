@@ -508,3 +508,37 @@
     border: 1px solid rgb(154, 161, 172);
     color: white;
 }
+
+
+.tooltip-wrapper {
+    border-radius: 17px;
+}
+
+#neo4jd3-tooltip {
+    z-index: 50;
+    position: absolute;
+}
+
+#neo4jd3-tooltip div {
+    background: #1d3159;
+    color: #fff;
+}
+
+#neo4jd3-tooltip tr, td {
+    font-size: 14px;
+}
+
+#neo4jd3-tooltip td {
+    max-width: 200px;
+    padding: 2px 10px;
+}
+
+#neo4jd3-tooltip tr, td {
+    border-style: solid;
+    border-width: 1px;
+}
+
+.key-title {
+    font-size: 16px;
+    font-weight: 500;
+}
