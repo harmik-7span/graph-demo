@@ -795,15 +795,21 @@ function updateToopTipInfo(d) {
       }
       elem.attr('class', "tooltip-wrapper")
           .html("<table>" + hoverTitleText + hoverIdText + hoverProperties + "</table>").transition().duration(200);
-      // if (d.x < 200) {
-      //     document.getElementById("neo4jd3-tooltip").style.left = (d.x + 80) + "px";
-      // } else if (d.x > 650) {
-      //     document.getElementById("neo4jd3-tooltip").style.left = (d.x - 100) + "px";
-      // } else {
-      //     document.getElementById("neo4jd3-tooltip").style.left = (d.x + 55) + "px";
-      // }
-      document.getElementById("neo4jd3-tooltip").style.left = (d3.event.pageX + 10) + "px"
-      document.getElementById("neo4jd3-tooltip").style.top = (d3.event.pageY - 10) + "px";
+     if (d3.event.pageX > 475 && d3.event.pageY < 374) {
+        document.getElementById("neo4jd3-tooltip").style.left = (d3.event.pageX - 350) + "px"
+        document.getElementById("neo4jd3-tooltip").style.top = (d3.event.pageY - 10) + "px";
+      }else if (d3.event.pageX < 474 && d3.event.pageY > 375) {
+        document.getElementById("neo4jd3-tooltip").style.left = (d3.event.pageX + 10) + "px"
+        document.getElementById("neo4jd3-tooltip").style.top = (d3.event.pageY - 140) + "px";
+      }else if(d3.event.pageX > 450 && d3.event.pageY > 370){
+        document.getElementById("neo4jd3-tooltip").style.left = (d3.event.pageX - 350) + "px"
+        document.getElementById("neo4jd3-tooltip").style.top = (d3.event.pageY - 140) + "px";
+      } else {
+        document.getElementById("neo4jd3-tooltip").style.left = (d3.event.pageX + 10) + "px"
+        document.getElementById("neo4jd3-tooltip").style.top = (d3.event.pageY - 10) + "px";
+      }
+      console.log(d3.event.pageX,d3.event.pageY);
+     
 
       // if (d.y < 100) {
       //     document.getElementById("neo4jd3-tooltip").style.top = (d.y + 80) + "px";
