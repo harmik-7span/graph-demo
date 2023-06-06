@@ -1,0 +1,32 @@
+name: Deploy main
+on:
+  push:
+    branches: [main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: npm install and npm run build
+        run: |
+          npm ci
+          npm run build
+      
+      - name: Deploy
+        env: 
+            GH_TOKEN: ${{secrets.DEMO}}
+        run: |
+          npm run deploy

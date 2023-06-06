@@ -96,7 +96,13 @@
           }
         },
         "deploy": {
-          "builder": "angular-cli-ghpages:deploy"
+          "builder": "angular-cli-ghpages:deploy",
+          "options": {
+            "baseHref": "https://github.com/harmik-7span/graph-demo/",
+            "repo": "https://github.com/harmik-7span/graph-demo.git",
+            "name": "harmik-7span",
+            "email": "harmik@7span.com"
+          }
         }
       }
     }
