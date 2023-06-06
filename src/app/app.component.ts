@@ -23,7 +23,8 @@ ngOnInit(): void {
   console.log(this.fullGraphUrl)
   this.fullGraphUrl.forEach((data: any) => {
     if (data?.p?.length > 0) {
-      data.p.forEach((element: any, index: any) => {
+      data.p.forEach((element: any, index: any,key:any) => {
+        console.log(key)
         if (index % 2 == 0) {
           let nodeObject: any = {};
           nodeObject.id = element._id;

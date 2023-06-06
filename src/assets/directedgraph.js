@@ -41,12 +41,12 @@ function DirectedGraph(_selector, _options) {
   function init(_selector, _options) {
     selector = _selector;
     options = { ...options, ..._options };
-
-    appendGraph(d3.select(selector));
-    simulation = initSimulation();
     if (options.infoPanel) {
       info = appendInfoPanel(d3.select(selector));
     }
+    appendGraph(d3.select(selector));
+    simulation = initSimulation();
+    
 
     if (options.toolTipOnNode) {
       toolTipinfo = appendToolTipOnNode(d3.select(selector));
@@ -789,9 +789,9 @@ function updateToopTipInfo(d) {
       let hoverIdText = "";
       let hoverProperties = "";
       hoverTitleText = "<tr><td class='key-title'>Type</td><td>" + d.labels[0] + "</td>";
-      hoverIdText = "<tr><td class='key-title'>id</td><td>" + d.id + "</td>";
+      hoverIdText = "<tr><td class='key-title'>Id</td><td>" + d.id + "</td>";
       for (var key in d.properties) {
-          hoverProperties += "<tr><td class='key-title'>" + key + "</td><td>" + d.properties[key] + "</td>"
+          hoverProperties += "<tr><td class='key-title'>" + key.replace(/([A-Z])/g, ' $1').replace(/^./, function(str){ return str.toUpperCase(); }) + "</td><td>" + d.properties[key] + "</td>"
       }
       elem.attr('class', "tooltip-wrapper")
           .html("<table>" + hoverTitleText + hoverIdText + hoverProperties + "</table>").transition().duration(200);
@@ -827,6 +827,7 @@ function clearToolTipInfo() {
   toolTipinfo.html('');
 }
   function initSimulation() {
+    console.log(svg.node())
     return (
       d3
         .forceSimulation()
@@ -854,13 +855,7 @@ function clearToolTipInfo() {
               return d.id;
             })
         )
-        .force(
-          "center",
-          d3.forceCenter(
-            700 / 2,
-            700 / 2
-          )
-        )
+        .force('center', d3.forceCenter(svg.node().parentElement.clientWidth / 2, svg.node().parentElement.clientHeight / 2))
         .force(
           "charge",
           d3
@@ -1132,7 +1127,8 @@ function clearToolTipInfo() {
       .enter()
       .append("path")
       .attr("fill", "#9a9a9a")
-      .attr("stroke", "#a5abb6");
+      .attr("stroke", "#a5abb6")
+      .style("stroke-width", 0.1)
 
     let rmerge = renter.merge(r).attr("class", "outline");
 
